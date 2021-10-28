@@ -35,3 +35,20 @@
   (equal? (set-intersection '(1 2 3) '(4 5 6)) '())
   )
 
+(define (set-union s1 s2)
+  (cond ((null? s1) s2)
+        ((null? s2) s1)
+        (else 
+          (let ((x1 (car s1))
+                (rest (set-union (cdr s1) s2)))
+           (cond ((element-of-set? x1 rest) rest)
+                 (else (cons x1 rest)))))))
+
+(test "set-union"
+  (equal? (set-union '() '()) '())
+  (equal? (set-union '(1) '()) '(1))
+  (equal? (set-union '(1) '(1)) '(1))
+  (equal? (set-union '(1 2) '(4 5 2)) '(1 4 5 2))
+  (equal? (set-union '(3 4) '(1 2 3 4 5)) '(1 2 3 4 5))
+)
+
