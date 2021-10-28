@@ -44,3 +44,59 @@
   (equal? (adjoin-set 2 '(3)) '(2 3))
   (equal? (adjoin-set 1 '(0)) '(0 1)))
 
+(define (set-intersection s1 s2)
+  (cond ((or (null? s1) (null? s2)) '())
+        (else (let ((x1 (car s1)) (x2 (car s2)))
+                (cond ((< x1 x2) (set-intersection (cdr s1) s2))
+                      ((< x2 x1) (set-intersection s1 (cdr s2)))
+                      (else (cons x1 (set-intersection (cdr s1) (cdr s2)))))))))
+
+(test "set-intersection"
+  (equal? (set-intersection '() '()) '())
+  (equal? (set-intersection '(1) '()) '())
+  (equal? (set-intersection '(1) '(1)) '(1))
+  (equal? (set-intersection '(1 2) '(2 4 5)) '(2))
+  (equal? (set-intersection '(1 2 3) '(4 5 6)) '())
+
+  (ordered-unique-list? (set-intersection '() '()))
+  (ordered-unique-list? (set-intersection '(1) '()))
+  (ordered-unique-list? (set-intersection '(1) '(1)))
+  (ordered-unique-list? (set-intersection '(1 2) '(2 4 5)))
+  (ordered-unique-list? (set-intersection '(1 4 5 6) '(4 5 6)))
+)
+
+(define (set-union-n-square s1 s2)
+  (cond ((null? s1) s2)
+        ((null? s2) s1)
+        (else 
+          (let* ((x1 (car s1)) 
+                 (rest (set-union (cdr s1) s2))
+                 (x2 (car rest)))
+            (cond ((< x1 x2) (cons x1 rest))
+                  ((= x1 x2) rest)
+                  (else (adjoin-set x1 rest)))))))
+
+(define (set-union s1 s2)
+  (cond ((null? s1) s2)
+        ((null? s2) s1)
+        (else 
+          (let ((x1 (car s1)) (x2 (car s2)))
+            (cond ((= x1 x2) (cons x1 (set-union (cdr s1) (cdr s2))))
+                  ((< x1 x2) (cons x1 (set-union (cdr s1) s2)))
+                  (else (cons x2 (set-union s1 (cdr s2)))))))))
+
+(test "set-union"
+  (equal? (set-union '() '()) '())
+  (equal? (set-union '(1) '()) '(1))
+  (equal? (set-union '(1) '(1)) '(1))
+  (equal? (set-union '(1 2) '(2 4 5)) '(1 2 4 5))
+  (equal? (set-union '(3 4) '(1 2 3 4 5)) '(1 2 3 4 5))
+  (equal? (set-union '(1) '(-1)) '(-1 1))
+
+  (ordered-unique-list? (set-union '() '()))
+  (ordered-unique-list? (set-union '(1) '()))
+  (ordered-unique-list? (set-union '(1) '(1)))
+  (ordered-unique-list? (set-union '(1 2) '(2 4 5)))
+  (ordered-unique-list? (set-union '(3 4) '(1 2 3 4 5)))
+)
+
