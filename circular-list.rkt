@@ -7,3 +7,9 @@
 
 ; the following command will make chez-scheme inifite looping
 ; (display cl)
+
+
+; find the element from which the cycle begins
+(let loop((fast cl) (slow cl))
+  (cond ((= (car fast) (car slow)) (display (car fast)))
+        (else (loop (cddr fast) (cdr slow)))))
